@@ -1,0 +1,34 @@
+{
+  "feed": {
+    "author": {
+      "name": "iTunes Store",
+      "uri": "http://wwww.apple.com/us/itunes/"
+    },
+    "copyright": "Copyright",
+    "country": "us",
+    "icon": "http: //itunes.apple.com/favicon.ico",
+    "id": "https://rss.itunes.apple.com/api/v1/us/apple-music/top-albums/all/1/explicit.json",
+    "results": [{
+      "artistId": 1276656483,
+      "artistName": "Lil Baby",
+      "artistUrl": "https://music.apple.com/us/artist/lil-baby/1276656483?app:music",
+      "artworkUrl100": "https://is2-ssl.mzstatic.com/image/thumb/Music124/v4/dd/25/8c/dd258c8a-f804-785f-1268-ad3cac0db873/20UMGIM04591.rgb.jpg/200x200bb.png",
+      "contentAdvisoryRating": "Explicit",
+      "copyright": "Quality ",
+      "genres": [{
+        "genreId": 18,
+        "name": "Hip-Hop/Rap",
+        "url": "httpsid18"
+      },
+        {
+          "genreId": 34,
+          "name": "Music",
+          "url": "https://itunes.apple.com/us/genre/id34"
+        }
+      ],
+      "name": "My Turn",
+      "releaseDate": "2020-02-28"
+    }]
+
+  }
+}
