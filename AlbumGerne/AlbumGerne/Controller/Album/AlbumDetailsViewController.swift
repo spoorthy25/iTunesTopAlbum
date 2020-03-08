@@ -15,8 +15,7 @@ AlbumDetailsViewController - Album Detailed View Controller.
  Open itunes album when clicked button
 */
 class AlbumDetailsViewController: UIViewController {
-    var albumDetails:AlbumModel?
-    var albumDetailsView = UIView()
+    var albumDetails:Album?
     
     override func viewDidLoad() {
         
@@ -35,7 +34,7 @@ class AlbumDetailsViewController: UIViewController {
      */
     func addNavigationButton() {
         let backButton = UIButton(type: .custom)
-        backButton.setTitle("Back", for: .normal)
+        backButton.setTitle("Done", for: .normal)
         backButton.setTitleColor(backButton.tintColor, for: .normal)
         backButton.addTarget(self, action: #selector(self.backAction(_:)), for: .touchUpInside)
 
@@ -55,28 +54,31 @@ class AlbumDetailsViewController: UIViewController {
      openiTunes - open itunes app of the selected album
      */
     @objc func openiTunes(sender: UIButton) {
-        if let url = albumDetails?.albumUrl{
+        if let url = albumDetails?.url{
             if let imageUrl = URL(string: url){
                 UIApplication.shared.open(imageUrl)
             }
         }
-
     }
     
-    
-    let containerView:UIView = {
-         let view = UIView()
-         view.translatesAutoresizingMaskIntoConstraints = false
-         view.clipsToBounds = true
-         return view
-     }()
+    let scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+
+    let scrollViewContainer: UIStackView = {
+        let view = UIStackView()
+        view.axis = .vertical
+        view.spacing = 10
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
      
      let albumImageView:UIImageView = {
          let img = UIImageView()
          img.contentMode = .scaleAspectFill
          img.translatesAutoresizingMaskIntoConstraints = false
-         img.layer.cornerRadius = 35
-         img.clipsToBounds = true
          return img
      }()
      
@@ -85,6 +87,8 @@ class AlbumDetailsViewController: UIViewController {
          label.font = UIFont.boldSystemFont(ofSize: 20)
          label.textColor = .black
          label.translatesAutoresizingMaskIntoConstraints = false
+         label.numberOfLines = 0;
+         label.lineBreakMode = NSLineBreakMode.byWordWrapping
          return label
      }()
      
@@ -93,140 +97,151 @@ class AlbumDetailsViewController: UIViewController {
          label.font = UIFont.boldSystemFont(ofSize: 20)
          label.textColor = .black
          label.translatesAutoresizingMaskIntoConstraints = false
+         label.numberOfLines = 0;
+         label.lineBreakMode = NSLineBreakMode.byWordWrapping
          return label
      }()
         
      let copyrightLabel:UILabel = {
          let label = UILabel()
          label.font = UIFont.boldSystemFont(ofSize: 20)
-            label.textColor = .black
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
+         label.textColor = .black
+         label.translatesAutoresizingMaskIntoConstraints = false
+         label.numberOfLines = 0;
+         label.lineBreakMode = NSLineBreakMode.byWordWrapping
+         return label
+    }()
         
-        let releaseDateLabel:UILabel = {
+     let releaseDateLabel:UILabel = {
          let label = UILabel()
          label.font = UIFont.boldSystemFont(ofSize: 20)
-            label.textColor = .black
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
+         label.textColor = .black
+         label.translatesAutoresizingMaskIntoConstraints = false
+         label.numberOfLines = 0;
+         label.lineBreakMode = NSLineBreakMode.byWordWrapping
+         return label
+    }()
         
-        let gerneDateLabel:UILabel = {
+    let gerneNameLabel:UILabel = {
          let label = UILabel()
          label.font = UIFont.boldSystemFont(ofSize: 20)
-            label.textColor = .black
-            label.translatesAutoresizingMaskIntoConstraints = false
-            return label
-        }()
+         label.textColor = .black
+         label.translatesAutoresizingMaskIntoConstraints = false
+         label.numberOfLines = 0;
+         label.lineBreakMode = NSLineBreakMode.byWordWrapping
+         return label
+    }()
         
-        let button:UIButton = {
-            let buttonRect = UIButton(frame: CGRect(x: 100, y: 100, width: 200, height: 25))
-            buttonRect.backgroundColor = .blue
-            buttonRect.layer.cornerRadius = 15
-            buttonRect.setTitle("Open in iTunes", for: .normal)
-            buttonRect.addTarget(self, action: #selector(openiTunes), for: .touchUpInside)
-            return buttonRect
-        }()
+    let button:UIButton = {
+         let buttonRect = UIButton()
+         buttonRect.backgroundColor = .blue
+         buttonRect.layer.cornerRadius = 15
+         buttonRect.setTitle("Open in iTunes", for: .normal)
+         buttonRect.addTarget(self, action: #selector(openiTunes), for: .touchUpInside)
+         buttonRect.translatesAutoresizingMaskIntoConstraints = false
+         return buttonRect
+    }()
         
-     /**
-     setupAlbumView - create UI elements for displaying album name,artist,releasedate
-     copyright
-     */
-     func setupAlbumView(){
-        if let albumName = albumDetails?.name {
-            albumNameLabel.text = "Album : \(albumName)"
-            albumNameLabel.numberOfLines = 0;
-            albumNameLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
-        }
-        
-        if let artistName = albumDetails?.artistName {
-            albumArtistNameLabel.text = "Artist : \(artistName)"
-            albumArtistNameLabel.numberOfLines = 0;
-            albumArtistNameLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
-        }
-        
-        if let albumCopyright = albumDetails?.copyright {
-            
-            copyrightLabel.text = "Copyright : \(albumCopyright)"
-            copyrightLabel.numberOfLines = 0;
-            copyrightLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
-        }
-         
-        if let albumReleaseDate = albumDetails?.releaseDate {
-            releaseDateLabel.text = "Released On : \(albumReleaseDate)"
-            releaseDateLabel.numberOfLines = 0;
-            releaseDateLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
-        }
-        
-        if let albumGenre = albumDetails?.genre {
-            let genre = albumGenre[0]
-            if let genreName = genre["name"] as? String{
-               gerneDateLabel.text = "Gerne : \(genreName)"
-               gerneDateLabel.numberOfLines = 0;
-               gerneDateLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
-            }
-            
-        }
-        
-        if let imageUrl = albumDetails?.artworkUrl {
-            if let fileUrl = URL(string: imageUrl){
-                DispatchQueue.main.async {
-                    Utilities().downloadImage(from: fileUrl,completionHandler: { (data, error) in
-                        DispatchQueue.main.async {
-                            if let imageData = data{
-                                self.albumImageView.image = UIImage(data: imageData )
-                            }
-                        }
-                    })
-                }
-            }
-        }
-
-         self.view.addSubview(albumImageView)
-         containerView.addSubview(albumNameLabel)
-         containerView.addSubview(albumArtistNameLabel)
-        containerView.addSubview(copyrightLabel)
-        containerView.addSubview(releaseDateLabel)
-        containerView.addSubview(gerneDateLabel)
-         self.view.addSubview(containerView)
-        self.view.addSubview(button)
-         button.translatesAutoresizingMaskIntoConstraints = false
-
-         button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-         button.widthAnchor.constraint(equalToConstant: 200).isActive = true
-         button.heightAnchor.constraint(equalToConstant: 35).isActive = true
-         button.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -20).isActive = true
-        
-         albumImageView.centerXAnchor.constraint(equalTo:self.view.centerXAnchor).isActive = true
-         albumImageView.leadingAnchor.constraint(equalTo:self.view.leadingAnchor, constant:50).isActive = true
-         albumImageView.topAnchor.constraint(equalTo:self.view.topAnchor,constant: 60).isActive = true
-         albumImageView.bottomAnchor.constraint(equalTo:self.containerView.topAnchor, constant:-20).isActive = true
-        
-         containerView.leadingAnchor.constraint(equalTo:self.view.leadingAnchor, constant:10).isActive = true
-         containerView.trailingAnchor.constraint(equalTo:self.view.trailingAnchor, constant:-10).isActive = true
-         containerView.bottomAnchor.constraint(equalTo:self.button.topAnchor, constant:150).isActive = true
-         
-         albumNameLabel.leadingAnchor.constraint(equalTo:self.containerView.leadingAnchor).isActive = true
-         albumNameLabel.trailingAnchor.constraint(equalTo:self.containerView.trailingAnchor).isActive = true
-         albumNameLabel.bottomAnchor.constraint(equalTo:self.albumArtistNameLabel.topAnchor,constant: -8).isActive = true
-        albumNameLabel.topAnchor.constraint(equalTo:self.containerView.topAnchor,constant: 0).isActive = true
-         
-         albumArtistNameLabel.leadingAnchor.constraint(equalTo:self.containerView.leadingAnchor).isActive = true
-         albumArtistNameLabel.leadingAnchor.constraint(equalTo:self.containerView.leadingAnchor).isActive = true
-         albumArtistNameLabel.bottomAnchor.constraint(equalTo:self.copyrightLabel.topAnchor,constant: -8).isActive = true
-        
-         copyrightLabel.leadingAnchor.constraint(equalTo:self.containerView.leadingAnchor).isActive = true
-         copyrightLabel.trailingAnchor.constraint(equalTo:self.containerView.trailingAnchor).isActive = true
-         copyrightLabel.bottomAnchor.constraint(equalTo:self.releaseDateLabel.topAnchor,constant: -8).isActive = true
-        
-         releaseDateLabel.leadingAnchor.constraint(equalTo:self.containerView.leadingAnchor).isActive = true
-         releaseDateLabel.trailingAnchor.constraint(equalTo:self.containerView.trailingAnchor).isActive = true
-         releaseDateLabel.bottomAnchor.constraint(equalTo:self.gerneDateLabel.topAnchor,constant: -8).isActive = true
-        
-         gerneDateLabel.leadingAnchor.constraint(equalTo:self.containerView.leadingAnchor).isActive = true
-         gerneDateLabel.trailingAnchor.constraint(equalTo:self.containerView.trailingAnchor).isActive = true
-        
-     }           
+     
+              
  
 }
+
+
+extension AlbumDetailsViewController{
+    
+    /**
+    setupAlbumView - create UI elements for displaying album name,artist,releasedate
+    copyright
+    */
+    func setupAlbumView(){
+       if let albumName = albumDetails?.name {
+           albumNameLabel.text = "Album : \(albumName)"
+       }
+       
+       if let artistName = albumDetails?.artistName {
+           albumArtistNameLabel.text = "Artist : \(artistName)"
+       }
+       
+       if let albumCopyright = albumDetails?.copyright {
+           copyrightLabel.text = "Copyright : \(albumCopyright)"
+       }
+        
+       if let albumReleaseDate = albumDetails?.releaseDate {
+           releaseDateLabel.text = "Released On : \(albumReleaseDate)"
+       }
+       
+       if let albumGenre = albumDetails?.genres {
+           var name = ""
+           for genre in albumGenre{
+               if let genreName = genre.name as String?{
+                   if(name.count > 0){
+                       name = name + " , " + genreName
+                   }else{
+                       name = genreName
+                   }
+               }
+           }
+           gerneNameLabel.text = "Gerne : \(name)"
+       }
+       
+       if let imageUrl = albumDetails?.artworkUrl100 {
+           if let fileUrl = URL(string: imageUrl){
+               DispatchQueue.main.async {
+                   Utilities().downloadImage(from: fileUrl,completionHandler: { (data, error) in
+                       DispatchQueue.main.async {
+                           if let imageData = data{
+                               self.albumImageView.image = UIImage(data: imageData )
+                           }
+                       }
+                   })
+               }
+           }
+       }
+       
+       view.addSubview(albumImageView)
+       
+       //add constraints for the UIViews
+       
+       //add constraints for album image
+       NSLayoutConstraint.activate([
+           albumImageView.centerXAnchor.constraint(equalTo:view.centerXAnchor),
+           albumImageView.leadingAnchor.constraint(equalTo:view.leadingAnchor, constant:50),
+           albumImageView.topAnchor.constraint(equalTo:view.topAnchor,constant: 100)
+       ])
+       
+       view.addSubview(scrollView)
+       scrollView.addSubview(scrollViewContainer)
+       scrollViewContainer.addArrangedSubview(albumNameLabel)
+       scrollViewContainer.addArrangedSubview(albumArtistNameLabel)
+       scrollViewContainer.addArrangedSubview(copyrightLabel)
+       scrollViewContainer.addArrangedSubview(releaseDateLabel)
+       scrollViewContainer.addArrangedSubview(gerneNameLabel)
+       self.view.addSubview(button)
+       
+       //add constraints for UIViews
+       NSLayoutConstraint.activate([
+           
+           //scrollview constraints
+           scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+           scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor,constant: -8),
+           scrollView.topAnchor.constraint(equalTo: albumImageView.bottomAnchor,constant: 70),
+           
+           //scrollview container constraints
+           scrollViewContainer.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor,constant: 10),
+           scrollViewContainer.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+           scrollViewContainer.topAnchor.constraint(equalTo: scrollView.topAnchor),
+           scrollViewContainer.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+           scrollViewContainer.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+           
+           //button constraints
+           button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+           button.leadingAnchor.constraint(equalTo: self.view.leadingAnchor,constant: 20),
+           button.trailingAnchor.constraint(equalTo: self.view.trailingAnchor,constant: -20),
+           button.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -20),
+           button.topAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: 20)
+           
+       ])
+    }
+}
+

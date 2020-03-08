@@ -14,19 +14,23 @@ ViewController - Main ViewController. Launch ViewController.
  create Tableview and display the albums in the tableviewcell
  handle tableviewcell selection
 */
-class ViewController: UIViewController,UITableViewDelegate {
+class ViewController: UIViewController,UITableViewDelegate,AlbumErrorDelegate {
 
     let tableView = UITableView()
     var safeArea = UILayoutGuide()
-    var window: UIWindow?
+    
     var albumImages = [Dictionary<String,Any>()]
     var activityView = UIActivityIndicatorView()
-    var albums = [AlbumModel]()
+    
+    var errorDelegate :AlbumErrorDelegate?
+    
+    var albums = [Album]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         //asign tableview delegate and datasource
+        view.backgroundColor = .white
         view.backgroundColor = .white
         safeArea = view.layoutMarginsGuide
         tableView.dataSource = self
@@ -34,12 +38,12 @@ class ViewController: UIViewController,UITableViewDelegate {
 
         tableView.delegate = self
         
+        errorDelegate.self = self
+        
         //create tableviewcell
         setupTableView()
-        
-        window = UIWindow(frame: UIScreen.main.bounds)
-        let viewController = ViewController()
-        window?.rootViewController = viewController
+                
+      
     }
 
     
@@ -57,97 +61,90 @@ class ViewController: UIViewController,UITableViewDelegate {
             NetworkManager.fetchAlbums(urlString: url, completionHandler: { (data, error) in
                 //parse response
                 if let responseData = data{
-                    self.parseResponse(responseData)
+                    self.albums = responseData.results
                     self.tableView.reloadData()
                     if(self.activityView.isAnimating){
                         self.activityView.stopAnimating()
                     }
                 }else{
-                    DispatchQueue.main.async {
-                        AlertController.showAlert(message: "Data Issue",title: "No Data, Please try again ",vc: self,buttonText: "Close")
-                        if(self.activityView.isAnimating){
-                            self.activityView.stopAnimating()
-                        }
-                    }
+                    self.errorDelegate?.showErrorMessage(message: dataError, title: dataErrorTitle,vc: self,buttonText: closeButtonText)
                 }
             })
         }else{
-            DispatchQueue.main.async {
-                AlertController.showAlert(message: "Network Issue",title: "No Internet, Please try connecting to internet",vc: self,buttonText: "Close")
+            errorDelegate?.showErrorMessage(message: networkError, title: networkErrorTitle,vc: self,buttonText: closeButtonText)
+        }
+    }
+    
+    /**
+     showErrorMessage - implemented protocol.
+     Showing the alert dialog
+     */
+    func showErrorMessage(message: String, title: String, vc: ViewController, buttonText: String){
+        DispatchQueue.main.async {
+            AlertController.showAlert(message: message,title: title,vc: vc,buttonText: buttonText)
+            if(self.activityView.isAnimating){
                 self.activityView.stopAnimating()
             }
         }
     }
     
     /**
-     parseResponse - parsing the response returned from the webservice
-    response - albums response
-     */
-    func parseResponse(_ response:  Dictionary<String, Any>) -> [AlbumModel]{
-        //clear the diuctionary if it has any values in it
-        albums.removeAll()
-        //exract album values and add it to the library
-        if let appJson = response["feed"] as? Dictionary<String, Any> {
-            if let resultArray = appJson["results"] as? [Dictionary<String,Any>]{
-                for album in resultArray{
-                     //parsing album data to dictionary
-                     let albumValues = AlbumModel(album)
-                     albums.append(albumValues)
-                }
-            }
-        }
-        return albums
-    }
-    
-    /**
      setupTableView - create tableviewcell
      */
     func setupTableView() {
-      view.addSubview(tableView)
+        view.addSubview(tableView)
         tableView.register(AlbumTableViewCell.self, forCellReuseIdentifier: "AlbumCell")
-      tableView.translatesAutoresizingMaskIntoConstraints = false
-      tableView.topAnchor.constraint(equalTo: safeArea.topAnchor).isActive = true
-      tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-      tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-      tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: safeArea.topAnchor).isActive = true
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
     }
 }
+
+
+protocol AlbumErrorDelegate {
+    
+    func showErrorMessage(message: String, title: String, vc: ViewController, buttonText: String)
+}
+
 
 /**
  handle TableViewDataSource - create tableview cells with album image title and artist name
  handle selection of tableviewcell
  */
 extension ViewController: UITableViewDataSource {
+    
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return albums.count
   }
     
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     
-    if let cell = tableView.dequeueReusableCell(withIdentifier: "AlbumCell", for: indexPath) as? AlbumTableViewCell{
-        let album = albums[indexPath.row]
-        
-        cell.albumNameLabel.text = album.name
-        cell.albumArtistNameLabel.text = album.artistName
-        
-         let url = album.artworkUrl
-            if let imageUrl = URL(string: url){
-                DispatchQueue.main.async {
-                    Utilities().downloadImage(from: imageUrl,completionHandler: { (data, error) in
-                        DispatchQueue.main.async {
-                            if let imageData = data{
-                                cell.albumImageView.image = UIImage(data: imageData)
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "AlbumCell", for: indexPath) as? AlbumTableViewCell{
+            let album = albums[indexPath.row]
+            
+            cell.albumNameLabel.text = album.name
+            cell.albumArtistNameLabel.text = album.artistName
+            
+             let url = album.artworkUrl100
+                if let imageUrl = URL(string: url){
+                    DispatchQueue.main.async {
+                        Utilities().downloadImage(from: imageUrl,completionHandler: { (data, error) in
+                            DispatchQueue.main.async {
+                                if let imageData = data{
+                                    cell.albumImageView.image = UIImage(data: imageData)
+                                }
                             }
-                        }
-                    })
+                        })
+                    }
                 }
-            }
-        
-        cell.selectionStyle = UITableViewCell.SelectionStyle.none
-        return cell
-    }else{
-        return UITableViewCell()
-    }
+            
+            cell.selectionStyle = UITableViewCell.SelectionStyle.none
+            return cell
+        }else{
+            return UITableViewCell()
+        }
   }
 
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

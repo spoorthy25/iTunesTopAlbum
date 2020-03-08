@@ -22,9 +22,8 @@ class AlertController: UIViewController {
      buttonText - button text to be displayed on alert dialog
      */
     class func showAlert(message:String,title: String,vc: ViewController,buttonText: String){
-        let alert = UIAlertController(title: title, message: title, preferredStyle: .alert)
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: buttonText, style: .default, handler: nil))
-        
         vc.present(alert, animated: true)
     }
     
@@ -34,7 +33,6 @@ class AlertController: UIViewController {
     class func showActivityIndicator(view: UIView) -> UIActivityIndicatorView{
     
         let container: UIView = UIView()
-        container.frame = CGRect(x: 0, y: 0, width: 160, height: 160)
         container.backgroundColor = .clear
 
         let activityView = UIActivityIndicatorView(style: .large)

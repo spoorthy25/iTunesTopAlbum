@@ -15,77 +15,67 @@
      */
     class AlbumTableViewCell: UITableViewCell {
         
-        let containerView:UIView = {
-            let view = UIView()
-            view.translatesAutoresizingMaskIntoConstraints = false
-            view.clipsToBounds = true
-            return view
-        }()
-        
-        let albumImageView:UIImageView = {
-            let img = UIImageView()
-            img.contentMode = .scaleAspectFill
-            img.translatesAutoresizingMaskIntoConstraints = false
-            img.layer.cornerRadius = 35
-            img.clipsToBounds = true
-            return img
-        }()
-        
-        let albumNameLabel:UILabel = {
-            let label = UILabel()
-            label.font = UIFont.boldSystemFont(ofSize: 20)
-            label.textColor = .black
-            label.translatesAutoresizingMaskIntoConstraints = false
-            label.numberOfLines = 0;
-            label.lineBreakMode = NSLineBreakMode.byWordWrapping
-            return label
-        }()
-        
-        let albumArtistNameLabel:UILabel = {
-            let label = UILabel()
-            label.font = UIFont.boldSystemFont(ofSize: 20)
-            label.textColor = .black
-            label.translatesAutoresizingMaskIntoConstraints = false
-            label.numberOfLines = 0;
-            label.lineBreakMode = NSLineBreakMode.byWordWrapping
-            return label
-        }()
-        
+        let albumImageView = UIImageView()
+        let albumNameLabel = UILabel()
+        let albumArtistNameLabel = UILabel()
         /**
          create tableview cell and add uielements to the tableviewcell
          add layout constraints
          */
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
-            
-            self.contentView.addSubview(albumImageView)
-            containerView.addSubview(albumNameLabel)
-            containerView.addSubview(albumArtistNameLabel)
-            self.contentView.addSubview(containerView)
-            
-            albumImageView.centerYAnchor.constraint(equalTo:self.contentView.centerYAnchor) .isActive = true
-            albumImageView.leadingAnchor.constraint(equalTo:self.contentView.leadingAnchor, constant:10).isActive = true
-            albumImageView.bottomAnchor.constraint(equalTo:self.contentView.topAnchor, constant:100).isActive = true
-            albumImageView.widthAnchor.constraint(equalToConstant:80).isActive = true
-            albumImageView.heightAnchor.constraint(equalToConstant:80).isActive = true
-            containerView.centerYAnchor.constraint(equalTo:self.contentView.centerYAnchor).isActive = true
-            containerView.leadingAnchor.constraint(equalTo:self.albumImageView.trailingAnchor, constant:10).isActive = true
-            containerView.trailingAnchor.constraint(equalTo:self.contentView.trailingAnchor, constant:-10).isActive = true
-            containerView.bottomAnchor.constraint(equalTo: albumArtistNameLabel.bottomAnchor).isActive = true
-            albumNameLabel.topAnchor.constraint(equalTo:self.containerView.topAnchor).isActive = true
-            albumNameLabel.leadingAnchor.constraint(equalTo:self.containerView.leadingAnchor).isActive = true
-            albumNameLabel.trailingAnchor.constraint(equalTo:self.containerView.trailingAnchor).isActive = true
-            
-            albumArtistNameLabel.topAnchor.constraint(equalTo:self.albumNameLabel.bottomAnchor).isActive = true
-            albumArtistNameLabel.leadingAnchor.constraint(equalTo:self.containerView.leadingAnchor).isActive = true
-            albumArtistNameLabel.topAnchor.constraint(equalTo:self.albumNameLabel.bottomAnchor).isActive = true
-            albumArtistNameLabel.leadingAnchor.constraint(equalTo:self.containerView.leadingAnchor).isActive = true
-            
+            setupViews()
         }
         
         required init?(coder aDecoder: NSCoder) {
             
             super.init(coder: aDecoder)
+        }
+        
+        func setupViews() {
+            albumImageView.translatesAutoresizingMaskIntoConstraints = false
+            albumNameLabel.translatesAutoresizingMaskIntoConstraints = false
+            albumArtistNameLabel.translatesAutoresizingMaskIntoConstraints = false
+            
+            // add views
+            contentView.addSubview(albumImageView)
+            contentView.addSubview(albumNameLabel)
+            contentView.addSubview(albumArtistNameLabel)
+            
+            // setup views properties
+            albumImageView.contentMode = .scaleAspectFit
+            
+            albumNameLabel.font = .boldSystemFont(ofSize: 28.0)
+            albumNameLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+            albumNameLabel.numberOfLines = 0
+            albumNameLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+            
+            albumArtistNameLabel.textColor = .darkGray
+            albumArtistNameLabel.font = albumArtistNameLabel.font.withSize(20)
+            albumArtistNameLabel.numberOfLines = 0
+            albumArtistNameLabel.lineBreakMode = NSLineBreakMode.byWordWrapping
+            
+            
+            // setup views constraints
+            let marginGuide = contentView.layoutMarginsGuide
+            NSLayoutConstraint.activate([
+                // album Image
+                albumImageView.leadingAnchor.constraint(equalTo: marginGuide.leadingAnchor),
+                albumImageView.trailingAnchor.constraint(equalTo: marginGuide.leadingAnchor,constant: 60),
+                albumImageView.topAnchor.constraint(equalTo: marginGuide.topAnchor),
+                albumImageView.bottomAnchor.constraint(lessThanOrEqualTo: marginGuide.topAnchor,constant: 80),
+                
+                // album name
+                albumNameLabel.topAnchor.constraint(equalTo: marginGuide.topAnchor),
+                albumNameLabel.leadingAnchor.constraint(equalTo: albumImageView.trailingAnchor, constant: 8),
+                albumNameLabel.trailingAnchor.constraint(equalTo: marginGuide.trailingAnchor, constant: 8),
+                
+                // album artist name
+                albumArtistNameLabel.topAnchor.constraint(equalTo: albumNameLabel.bottomAnchor),
+                albumArtistNameLabel.leadingAnchor.constraint(equalTo: albumImageView.trailingAnchor, constant: 8),
+                albumArtistNameLabel.trailingAnchor.constraint(equalTo: marginGuide.trailingAnchor,constant: 8),
+                albumArtistNameLabel.bottomAnchor.constraint(equalTo: marginGuide.bottomAnchor,constant: -8),
+                ])
         }
         
     }

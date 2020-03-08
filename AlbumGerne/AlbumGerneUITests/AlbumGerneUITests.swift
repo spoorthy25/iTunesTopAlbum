@@ -28,8 +28,8 @@ class AlbumGerneUITests: XCTestCase {
         
         let app = XCUIApplication()
         app.launch()
-        app.tables/*@START_MENU_TOKEN@*/.staticTexts["Lil Baby"]/*[[".cells.staticTexts[\"Lil Baby\"]",".staticTexts[\"Lil Baby\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
-        app.navigationBars["AlbumGerne.AlbumDetailsView"].buttons["Back"].tap()
+        //app.tables/*@START_MENU_TOKEN@*/.staticTexts["Lil Baby"]/*[[".cells.staticTexts[\"Lil Baby\"]",".staticTexts[\"Lil Baby\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        //app.navigationBars["AlbumGerne.AlbumDetailsView"].buttons["Done"].tap()
         
     }
 

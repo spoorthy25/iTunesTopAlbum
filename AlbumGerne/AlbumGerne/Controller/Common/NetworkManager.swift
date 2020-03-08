@@ -57,32 +57,31 @@ class NetworkManager{
      urlString - itunes api
      retrun- album data or error if any
      */
-    class func fetchAlbums(urlString: String, completionHandler: @escaping (Dictionary<String,Any>?, NSString?) -> Void) {
+    class func fetchAlbums(urlString: String, completionHandler: @escaping (AlbumResult?, NSString?) -> Void) {
         if let url = URL(string: urlString){
           let task = URLSession.shared.dataTask(with: url, completionHandler: { (data, response, error) in
             if let error = error {
-              print("Error in fetching Albums: \(error)")
-                completionHandler( nil, "Error in fetching ALbums: \(error)" as NSString)
+                completionHandler( nil, "\(fetchError) : \(error)" as NSString)
               return
             }
             
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode) else {
-              print("Error with the response, unexpected status code: \(response)")
-                    completionHandler( nil, "Error with the response, unexpected status code" as NSString)
+                    completionHandler( nil, "\(invalidResponseError)" as NSString)
               return
             }
+            
+            
             // got the album data from server so need to call back the homeviewcontroller
             do {
                 if let responseData = data{
-                    if let json = try JSONSerialization.jsonObject(with: responseData) as? Dictionary<String, Any>{
-                        DispatchQueue.main.async {
-                            completionHandler( json as Dictionary<String,Any>, nil)
-                        }
-                    }
+                   let response = try JSONDecoder().decode(AlbumFeed.self, from: responseData)
+                   DispatchQueue.main.async {
+                      completionHandler( response.feed, nil)
+                   }
                 }
-            } catch {
-                print("error")
+            } catch{
+                completionHandler( nil, "\(invalidResponseError)" as NSString)
             }
           })
           task.resume()

@@ -11,9 +11,22 @@ import XCTest
 
 class AlbumGerneTests: XCTestCase {
     
+    var albums = [Album]()
+    
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        
+        do {
+            if let file = Bundle.main.url(forResource: "Result", withExtension: "json") {
+                let json = try Data.init(contentsOf: file)
+                let response = try JSONDecoder().decode(AlbumFeed.self, from: json)
+                let albumFeed = response.feed
+                albums = albumFeed.results
+            } else {
+                print("no file")
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
     }
 
     override func tearDown() {
@@ -21,36 +34,15 @@ class AlbumGerneTests: XCTestCase {
     }
 
     func testParseResponse() {
-        var albums:[AlbumModel]?
-        do {
-            if let file = Bundle.main.url(forResource: "Result", withExtension: "json") {
-                let json = try Data.init(contentsOf: file)
-                if let jsonData = try JSONSerialization.jsonObject(with: json) as? Dictionary<String, Any>{
-                    albums = ViewController().parseResponse(jsonData)
-                }
-            } else {
-                print("no file")
-            }
-        } catch {
-            print(error.localizedDescription)
-        }
         
-        if(albums?.count == 1){
-            XCTAssertTrue(true)
-        }
-        else{
-            XCTAssertFalse(false)
-        }
+         XCTAssertTrue(albums.count == 1)
     }
 
-    func testAlbumModelNoData() {
-        let album = ["name":"","artistName": ""]
-               let albumValues = AlbumModel(album)
-               if(albumValues.name == ""){
-                   XCTAssertTrue(true)
-               }else{
-                   XCTAssertTrue(true)
-               }
+    func testAlbumNameDate() {
+        for album in albums{
+            XCTAssertTrue(album.name == "Chromatica")
+        }
+        
     }
 
     

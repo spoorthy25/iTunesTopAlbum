@@ -4,6 +4,11 @@
    <ContextStates>
       <ContextState
          contextName = "AlbumDetailsViewController.setupAlbumView():AlbumDetailsViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "name.count">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "ViewController.tableView(_:didSelectRowAt:):ViewController.swift">

@@ -12,25 +12,35 @@ import UIKit
 /**
  AlbumModel - model which defines the Album values and parse the API reponse
  */
-struct AlbumModel {
-      var name: String
-      var artistName: String
-      var copyright: String
-      var artworkUrl: String
-      var releaseDate: String
-      var albumUrl: String
-      var genre: [Dictionary<String,Any>]
-    
-      init(_ dictionary: Dictionary<String,Any>) {
-          self.name = dictionary["name"] as? String ?? ""
-          self.artistName = dictionary["artistName"] as? String ?? ""
-          self.artworkUrl = dictionary["artworkUrl100"] as? String ?? ""
-          self.copyright = dictionary["copyright"] as? String ?? ""
-          self.releaseDate = dictionary["releaseDate"] as? String ?? ""
-          self.albumUrl = dictionary["url"] as? String ?? ""
-          self.genre = dictionary["genres"] as? [Dictionary<String,Any>] ?? [Dictionary<String,Any>]()
-     }
+//Retrieving the Feed json result object
+struct AlbumFeed: Codable{
+    var feed: AlbumResult
 }
+
+//Retrieving the Array of Albums json object
+struct AlbumResult: Codable{
+    var results: [Album]
+}
+
+//Retrieving the Album value from Array of Albums json object
+struct Album: Codable{
+    var name: String
+    var artistName: String
+    var artworkUrl100: String
+    var copyright: String
+    var url: String
+    var releaseDate: String
+    var genres: [AlbumGenres]
+}
+
+//Retrieving the Genre from Album json object 
+struct AlbumGenres: Codable{
+    var genreId: String
+    var name: String
+    var url: String
+}
+
+
 
 
 

@@ -11,8 +11,26 @@ import XCTest
 
 class AlbumModelTests: XCTestCase {
 
+    var album:[Album]?
+    var albums:AlbumResult?
+    var albumFeed: AlbumFeed?
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
+        
+        do {
+            if let file = Bundle.main.url(forResource: "Result", withExtension: "json") {
+                let json = try Data.init(contentsOf: file)
+                let response = try JSONDecoder().decode(AlbumFeed.self, from: json)
+                albumFeed = response
+                albums = albumFeed?.feed
+                album = albums?.results
+                
+            } else {
+                print("no file")
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
     }
 
     override func tearDown() {
@@ -20,22 +38,23 @@ class AlbumModelTests: XCTestCase {
     }
 
     func testAlbumModel() {
-        let album = ["name":"Test Name","artistName": "Test Artist"]
-        let albumValues = AlbumModel(album)
-        if(albumValues.name == "Test Name"){
-             XCTAssertTrue(true)
-        }else{
-             XCTAssertTrue(true)
-        }
+        
+        XCTAssertTrue(albumFeed?.feed.results.count == 1)
+        
+        XCTAssertTrue(albums?.results.count == 1)
+        
+        XCTAssertTrue(album?.count == 1)
+        
+        
+        
     }
 
-    func testAlbumModelNoData() {
-        let album = ["name":"","artistName": ""]
-        let albumValues = AlbumModel(album)
-        if(albumValues.name == ""){
-             XCTAssertTrue(true)
-        }else{
-             XCTAssertTrue(true)
+    func testAlbumModelData() {
+        if let albumData = album{
+            for album in albumData{
+                XCTAssertTrue(album.name == "Chromatica")
+                XCTAssertTrue(album.artistName == "Lady Gaga")
+            }
         }
     }
 

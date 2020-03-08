@@ -24,12 +24,12 @@ class NetworkManagerTests: XCTestCase {
 
     func testFetchAlbumsGetsHTTPStatusCode200() {
       
-      let url =  URL(string: host + endpoint) as? URL
+        let url =  URL(string: host + endpoint)
       
       let promise = expectation(description: "Completion handler invoked")
       var statusCode: Int?
       var responseError: Error?
-        if let urlValue = url as? URL {
+        if let urlValue = url {
           let dataTask = session.dataTask(with: urlValue ) { data, response, error in
             statusCode = (response as? HTTPURLResponse)?.statusCode
             responseError = error
